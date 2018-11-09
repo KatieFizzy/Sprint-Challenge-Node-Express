@@ -38,7 +38,7 @@ the project has been completed, not required
     .catch(err => {
       res
         .status(500)
-        .json({ error: "The users information could not be retrieved." });
+        .json({ error: "The project information could not be retrieved." });
     });
 });
 
@@ -59,7 +59,7 @@ server.get('/api/projects/:id', (req, res) => {
       .catch(err => {
         res 
           .status(500)
-          .json({ error: "The post information could not be retrieved." });
+          .json({ error: "The project information could not be retrieved." });
       });
   });
 
@@ -83,7 +83,7 @@ server.post('/api/projects', async (req, res) => {
     try {
         newProject = await projectModel.insert(projectData);
     } catch (error) {
-            res.status(500).json({ error: "There was an error while saving the post to the database" });
+            res.status(500).json({ error: "There was an error while saving the project to the database" });
             return      
     }
     console.log(newProject)
@@ -93,35 +93,42 @@ server.post('/api/projects', async (req, res) => {
 
 //----- PUT projects -----
 
-server.put('/api/users/:id', async (req, res) => {
+server.put('/api/projects/:id', async (req, res) => {
     const { id } = req.params;
-    const userChanges = req.body;
-    userDb.get(id)
-        .then(user => { 
-    //!!!!_____need to add character length conditional_____ 
-        if (!user) { 
-           res.status(404).json({ message: "The user with the specified ID does not exist." });
+    const projectChanges = req.body;
+    const characterLimit = 128;
+    projectModel.get(id)
+        .then(project => { 
+        if (!project) { 
+           res.status(404).json({ message: "The project with the specified ID does not exist." });
            return  
          }
          })
          .catch(err => {
           res
             .status(500)
-            .json({ error: "The post information could not be retrieved." });
+            .json({ error: "The project information could not be retrieved." });
          });
           
-        if (!userChanges.name || userChanges.name==="" ) {
-          const errorMessage = "Please provide name for the user"; 
+        if (!projectChanges.name || projectChanges.name==="" || !projectChanges.description || projectChanges.description==="") {
+          const errorMessage = "Please provide name and description for the project"; 
           res.status(400).json({ errorMessage });
           return
         } 
+        if (projectChanges.name.length > characterLimit) {
+            const errorMessage = "Please provide name under 128 characters"; 
+            res.status(400).json({ errorMessage});
+            return
+        }   
         try {
-          await userDb.update(id, userChanges)
+          await projectModel.update(id, projectChanges)
+          return
         } catch (error) {
-        res.status(500).json({ error: "There was an error while saving the post to the database" });
+        res.status(500).json({ error: "There was an error while saving the project to the database" });
         return      
       }
-      res.status(201).json({message: "user was updated" });
+      console.log(req.body)
+      res.status(201).json(req.body);
       return
       });
 

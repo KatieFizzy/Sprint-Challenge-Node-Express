@@ -211,25 +211,41 @@ server.get('/api/singleaction/:id', (req, res) => {
 
 //----- POST actions -----
 
-server.post('/api/actions', async (req, res) => {
-    console.log("HI AGAIN")
-    const postData = req.body;
-    console.log(postData)
-    if (!postData.text|| postData.text==="" ) {
-        const errorMessage = "Please provide post content"; 
+server.post('/api/projectactions/:id', async (req, res) => {
+    const { id } = req.params; 
+    const actionData = req.body;
+    const characterLimit = 128;
+    let newAction;
+
+    if (!actionData.project_id || actionData.project_id !== id || actionData.project_id=== "" ) {
+        const errorMessage = "Please provide the correct id number for  project"; 
         res.status(400).json({ errorMessage});
         return
-    }   
-
+    } 
+  
+    if (!actionData.description|| actionData.description==="" || !actionData.notes || actionData.notes===""  ) {
+        const errorMessage = "Please provide both a note and description for the project"; 
+        res.status(400).json({ errorMessage});
+        return
+    }  
+    if (actionData.description.length > characterLimit) {
+        const errorMessage = "Please provide description under 128 characters"; 
+        res.status(400).json({ errorMessage});
+        return
+    }  
     try {
-        await postDb.insert(postData);
+        newAction = await actionModel.insert(actionData);
+
     } catch (error) {
-            res.status(500).json({ error: "There was an error while saving the post to the database" });
+        console.log(error)
+            res.status(500).json({ error: "There was an error while saving the project to the database" });
             return      
     }
-    res.status(201).json({message: "post was added blog" });
-    return
+
+    res.status(201).json(newAction);
+        return
 });
+
 
 //----- PUT actions -----
 

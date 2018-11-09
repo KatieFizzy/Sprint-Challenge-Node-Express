@@ -193,7 +193,6 @@ server.get('/api/singleaction/:id', (req, res) => {
     const { id } = req.params; 
     actionModel.get(id)
       .then(action => { 
-        console.log(action)
         if (!action) { 
         res.status(404).json({ message: "The action with the specified ID does not exist." });
         return  
@@ -250,61 +249,67 @@ server.post('/api/projectactions/:id', async (req, res) => {
 //----- PUT actions -----
 
 server.put('/api/singleaction/:id', async (req, res) => {
-   console.log("HI")
     const { id } = req.params;
-    const postChanges = req.body;
-    postDb.get(id)
-        .then(post => { 
-        if (!post) { 
-           res.status(404).json({ message: "The post with the specified ID does not exist." });
-           return  
-         }
-         })
-         .catch(err => {
-          res
-            .status(500)
-            .json({ error: "The post information could not be retrieved." });
-            return
-         });
-        if (!postChanges.text || postChanges.text==="" || !postChanges.postedBy || userChanges.postedBy==="" ) {
-          const errorMessage = "Please provide both posted by name and text for the post update"; 
-          res.status(400).json({ errorMessage });
-          return
-        } 
-        try {
-          await postDb.update(id, postChanges)
-        } catch (error) {
-        res.status(500).json({ error: "There was an error while saving the post to the database" });
-        return      
-      }
-      res.status(201).json(post);
-      return
+    const actionChanges = req.body;
+    const characterLimit = 128;
+    let updatedAction;
+
+    actionModel.get(id)
+      .then(action => { 
+        console.log(action)
+        if (!action) { 
+        res.status(404).json({ message: "The action with the specified ID does not exist." });
+        return  
+        
+        }
+      })
+      .catch(err => {
+        res 
+          .status(500)
+          .json({ error: "The post information could not be retrieved." });
       });
+
+    if (!actionChanges.project_id || actionChanges.project_id=== "" ) {
+        const errorMessage = "Please provide the correct id number for action"; 
+        res.status(400).json({ errorMessage});
+        return
+    } 
+  
+    if (!actionChanges.description|| actionChanges.description==="" || !actionChanges.notes || actionChanges.notes===""  ) {
+        const errorMessage = "Please provide both a note and description for the project"; 
+        res.status(400).json({ errorMessage});
+        return
+    }  
+    if (actionChanges.description.length > characterLimit) {
+        const errorMessage = "Please provide description under 128 characters"; 
+        res.status(400).json({ errorMessage});
+        return
+    }  
+    try {
+        updatedAction = await actionModel.update(id,actionChanges);
+      
+    } catch (error) {
+            res.status(500).json({ error: "There was an error while saving the project to the database" });
+            return
+    }
+    res.status(201).json(updatedAction);
+  
+});
+
+    
 
 //----- DELETE actions -----
 
 server.delete('/api/singleaction/:id', (req, res) => {
     const id = req.params.id;
-   // userDb.get(id)
-   userDb.remove(id)
+   actionModel.remove(id)
    .then(count => res.status(200).json(count))
-    // .then(user => { 
-     // console.log("we're in then")
-        //  if (!user) { 
-        //  res.status(404).json({ message: "The post with the specified ID does not exist." });
-        /*  return
-       } else if (user){ // or oops - if we could retrieve it, we would but it's not here, status 404
-        userDb.remove(user.id) 
-         res.status(200).json({ message: "The post with the specified ID was deleted." });
-         return
-       }
-        })*/
         .catch(err => {
-          res //if data can't be retrieved ... 
+          res 
             .status(500)
             .json({ error: "The post information could not be retrieved." });
         });
-        //res.status(200).json({ message: "The post with the specified ID was deleted." });
+      
       });
 module.exports = server;
   

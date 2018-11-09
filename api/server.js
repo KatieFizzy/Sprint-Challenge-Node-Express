@@ -251,22 +251,7 @@ server.put('/api/singleaction/:id', async (req, res) => {
     const actionChanges = req.body;
     const characterLimit = 128;
     let updatedAction;
-
-    actionModel.get(id)
-      .then(action => { 
-        console.log(action)
-        if (!action) { 
-        res.status(404).json({ message: "The action with the specified ID does not exist." });
-        return  
-        
-        }
-      })
-      .catch(err => {
-        res 
-          .status(500)
-          .json({ error: "The post information could not be retrieved." });
-      });
-
+    
     if (!actionChanges.project_id || actionChanges.project_id=== "" ) {
         const errorMessage = "Please provide the correct id number for action"; 
         res.status(400).json({ errorMessage});
@@ -290,7 +275,15 @@ server.put('/api/singleaction/:id', async (req, res) => {
             res.status(500).json({ error: "There was an error while saving the project to the database" });
             return
     }
-    res.status(201).json(updatedAction);
+
+    if (updatedAction === null) {
+        res.status(404).json({ message: "The action with the specified ID does not exist." });
+        return
+    } else {
+        res.status(201).json(updatedAction);
+        return
+    }
+    
   
 });
 
@@ -310,4 +303,5 @@ server.delete('/api/singleaction/:id', (req, res) => {
       
       });
 module.exports = server;
+
   

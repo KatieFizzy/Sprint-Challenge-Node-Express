@@ -14,6 +14,7 @@ function booleanToint(bool) {
 }
 
 function projectToBody(project) {
+  if (project !== undefined) {
   const result = {
     ...project,
     completed: intToBoolean(project.completed),
@@ -27,6 +28,7 @@ function projectToBody(project) {
   }
 
   return result;
+}
 }
 
 function actionToBody(action) {

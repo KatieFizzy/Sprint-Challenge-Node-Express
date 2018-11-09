@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const server = express();
 //----- MIDDLEWARE ---------
-
+//const idProjectChecker= require('../middleware/idProjectChecker.js');
 server.use(express.json());
 server.use(helmet());
 server.use(morgan('short')); 
@@ -44,23 +44,24 @@ to complete the action.
 
 server.get('/api/projects/:id', (req, res) => {
     // !!! TEST ME AFTER COMPLETING POST AND ADDING PROJECTS
-    const { id } = req.params; 
+    const { id } = req.params
     projectModel.get(id)
-      .then(project => { 
-        console.log(project)
-        if (!project) { 
-        res.status(404).json({ message: "The user with the specified ID does not exist." });
-        return  
-        } else if (project){ 
-        res.status(200).json(project);
-        return  
+     .then(project => { 
+        if  (!project){ 
+            res.status(404).json({ message: "The user with the specified ID does not exist." });
+            return  
+        } else if (project) { 
+            console.log(project)
+            res.status(200).json(project);
+            return 
         }
       })
       .catch(err => {
-        res 
-          .status(500)
-          .json({ error: "The project information could not be retrieved." });
-      });
+         console.log(err)
+       res 
+         .status(500)
+         .json({ error: "The project information could not be retrieved." });
+     });
   });
 
 //----- POST projects -----
@@ -184,7 +185,7 @@ server.get('/api/singleaction/:id', (req, res) => {
     const { id } = req.params; 
     actionModel.get(id)
       .then(action => { 
-        if (!action) { 
+        if (action===false) { 
         res.status(404).json({ message: "The action with the specified ID does not exist." });
         return  
         } else if (action){ 
@@ -193,6 +194,7 @@ server.get('/api/singleaction/:id', (req, res) => {
         }
       })
       .catch(err => {
+          console.log(err)
         res 
           .status(500)
           .json({ error: "The post information could not be retrieved." });

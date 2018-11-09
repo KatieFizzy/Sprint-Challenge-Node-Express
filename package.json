@@ -1,4 +1,10 @@
 {
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon"
+  },
+  "repository": "https://github.com/KatieFizzy/Sprint-Challenge-Node-Express.git",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.16.4",
     "helmet": "^3.15.0",

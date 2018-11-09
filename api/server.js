@@ -134,29 +134,17 @@ server.put('/api/projects/:id', async (req, res) => {
 
 //----- DELETE projects -----
 
-server.delete('/api/users/:id', (req, res) => {
+server.delete('/api/projects/:id', (req, res) => {
     const id = req.params.id;
    // userDb.get(id)
-   userDb.remove(id)
+   projectModel.remove(id)
    .then(count => res.status(200).json(count))
-    // .then(user => { 
-     // console.log("we're in then")
-        //  if (!user) { 
-        //  res.status(404).json({ message: "The post with the specified ID does not exist." });
-        /*  return
-       } else if (user){ // or oops - if we could retrieve it, we would but it's not here, status 404
-        userDb.remove(user.id) 
-         res.status(200).json({ message: "The post with the specified ID was deleted." });
-         return
-       }
-        })*/
-        .catch(err => {
-          res //if data can't be retrieved ... 
-            .status(500)
-            .json({ error: "The post information could not be retrieved." });
-        });
-        //res.status(200).json({ message: "The post with the specified ID was deleted." });
-      });
+   .catch(err => {
+    res 
+        .status(500)
+        .json({ error: "The post information could not be retrieved." });
+    });
+});
 
 //**********************  POST CRUD ********************** // 
 

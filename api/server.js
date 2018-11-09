@@ -150,8 +150,6 @@ server.delete('/api/projects/:id', (req, res) => {
 
 //----- GET actions -----
 
-// !!!!! RETEST AFTER ADDING ACTIONS POST !!!!!!
-
 server.get('/api/actions', (req, res) => {
     actionModel.get() 
     .then(actions=> { 

@@ -17,9 +17,6 @@ TASKS
 
 * projects requirements *
 
-> id: number, no need to provide it when creating projects, 
-the database will generate it.
-
 > name: string, up to 128 characters long, required.
 
 > description: string, no size limit, required.
@@ -29,14 +26,14 @@ the project has been completed, not required
 
 */
 
-//********************** USER CRUD **********************// 
+//********************** PROJECT CRUD **********************// 
 
-//----- GET users -----
+//----- GET projects -----
 
- server.get('/api/users', (req, res) => {
-    userDb.get() 
-    .then(users=> { 
-      res.status(200).json(users);
+ server.get('/api/projects', (req, res) => {
+    projectModel.get() 
+    .then(projects=> { 
+      res.status(200).json(projects);
     }) 
     .catch(err => {
       res
@@ -45,16 +42,17 @@ the project has been completed, not required
     });
 });
 
-server.get('/api/users/:id', (req, res) => {
+server.get('/api/projects/:id', (req, res) => {
+    // !!! TEST ME AFTER COMPLETING PUT AND ADDING PROJECTS
     const { id } = req.params; 
-    userDb.get(id)
-      .then(user => { 
-        console.log(user)
-        if (!user) { 
+    projectModel.get(id)
+      .then(project => { 
+        console.log(project)
+        if (!project) { 
         res.status(404).json({ message: "The user with the specified ID does not exist." });
         return  
-        } else if (user){ 
-        res.status(200).json(user);
+        } else if (project){ 
+        res.status(200).json(project);
         return  
         }
       })
@@ -65,7 +63,7 @@ server.get('/api/users/:id', (req, res) => {
       });
   });
 
-//----- POST users -----
+//----- POST projects -----
 
 server.post('/api/users', async (req, res) => {
     const userData = req.body;
@@ -85,7 +83,7 @@ server.post('/api/users', async (req, res) => {
     return
 });
 
-//----- PUT users -----
+//----- PUT projects -----
 
 server.put('/api/users/:id', async (req, res) => {
     const { id } = req.params;
@@ -119,7 +117,7 @@ server.put('/api/users/:id', async (req, res) => {
       return
       });
 
-//----- DELETE users -----
+//----- DELETE projects -----
 
 server.delete('/api/users/:id', (req, res) => {
     const id = req.params.id;

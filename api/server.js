@@ -185,7 +185,7 @@ server.get('/api/singleaction/:id', (req, res) => {
     const { id } = req.params; 
     actionModel.get(id)
       .then(action => { 
-        if (action===false) { 
+        if (!action) { 
         res.status(404).json({ message: "The action with the specified ID does not exist." });
         return  
         } else if (action){ 

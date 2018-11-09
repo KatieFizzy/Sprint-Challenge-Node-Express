@@ -32,8 +32,10 @@ function projectToBody(project) {
 }
 
 function actionToBody(action) {
+  if (action !== undefined) {
   return {
     ...action,
     completed: intToBoolean(action.completed),
   };
+}
 }

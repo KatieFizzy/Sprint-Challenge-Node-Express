@@ -43,7 +43,7 @@ the project has been completed, not required
 });
 
 server.get('/api/projects/:id', (req, res) => {
-    // !!! TEST ME AFTER COMPLETING PUT AND ADDING PROJECTS
+    // !!! TEST ME AFTER COMPLETING POST AND ADDING PROJECTS
     const { id } = req.params; 
     projectModel.get(id)
       .then(project => { 
@@ -65,21 +65,29 @@ server.get('/api/projects/:id', (req, res) => {
 
 //----- POST projects -----
 
-server.post('/api/users', async (req, res) => {
-    const userData = req.body;
-    if (!userData.name || userData.name==="" ) {
-        const errorMessage = "Please provide name for the user"; 
+server.post('/api/projects', async (req, res) => {
+    const projectData = req.body;
+    const characterLimit = 128;
+    let newProject;
+
+    if (!projectData.name || projectData.name==="" || !projectData.description || projectData.description===""  ) {
+        const errorMessage = "Please provide both a name and description for the project"; 
         res.status(400).json({ errorMessage});
         return
     }   
-    //!!!!_____need to add character length conditional_____
+    if (projectData.name.length > characterLimit) {
+        const errorMessage = "Please provide name under 128 characters"; 
+        res.status(400).json({ errorMessage});
+        return
+    }  
     try {
-        await userDb.insert(userData);
+        newProject = await projectModel.insert(projectData);
     } catch (error) {
             res.status(500).json({ error: "There was an error while saving the post to the database" });
             return      
     }
-    res.status(201).json({message: "user was added to database" });
+    console.log(newProject)
+    res.status(201).json(newProject);
     return
 });
 

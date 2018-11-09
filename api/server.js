@@ -15,14 +15,14 @@ TASKS
 ---- perform CRUD operations on projects and actions.
 ----- retrieve the list of actions for a project.
 
-* projects requirements *
+* Actions requirements *
 
-> name: string, up to 128 characters long, required.
+> project_id: number, required, must be the id of an existing project.
 
-> description: string, no size limit, required.
-
-> completed: boolean to indicate if 
-the project has been completed, not required
+> description: string, up to 128 characters long, required.
+> notes: string, no size limit, required. 
+Used to record additional notes or requirements 
+to complete the action.
 
 */
 
@@ -146,14 +146,16 @@ server.delete('/api/projects/:id', (req, res) => {
     });
 });
 
-//**********************  POST CRUD ********************** // 
+//**********************  ACTION CRUD ********************** // 
 
-//----- GET posts -----
+//----- GET actions -----
 
-server.get('/api/posts', (req, res) => {
-    postDb.get() 
-    .then(posts=> { 
-      res.status(200).json(posts);
+// !!!!! RETEST AFTER ADDING ACTIONS POST !!!!!!
+
+server.get('/api/actions', (req, res) => {
+    actionModel.get() 
+    .then(actions=> { 
+      res.status(200).json(actions);
     }) 
     .catch(err => {
       res
@@ -162,16 +164,21 @@ server.get('/api/posts', (req, res) => {
     });
 });
 
-server.get('/api/posts/:id', (req, res) => {
+server.get('/api/projectactions/:id', (req, res) => {
     const { id } = req.params; 
-    userDb.getUserPosts(id)
-      .then(post => { 
-        console.log(post)
-        if (!post) { 
-        res.status(404).json({ message: "The user with the specified ID does not exist." });
+    projectModel.getProjectActions(id)
+      .then(project => { 
+        console.log(project)
+        if (!project) { 
+        res.status(404).json({ message: "The project with the specified ID does not exist." });
         return  
-        } else if (post){ 
-        res.status(200).json(post);
+
+        } else if (!project.length) { 
+         res.status(404).json({ message: "The project with the specified ID does not have any actions yet." });
+         return  
+
+         } else if (project && project.length){ 
+        res.status(200).json(project);
         return  
         }
       })
@@ -182,16 +189,16 @@ server.get('/api/posts/:id', (req, res) => {
       });
   });
 
-server.get('/api/singlepost/:id', (req, res) => {
+server.get('/api/singleaction/:id', (req, res) => {
     const { id } = req.params; 
-    postDb.get(id)
-      .then(post => { 
-        console.log(post)
-        if (!post) { 
-        res.status(404).json({ message: "The user with the specified ID does not exist." });
+    actionModel.get(id)
+      .then(action => { 
+        console.log(action)
+        if (!action) { 
+        res.status(404).json({ message: "The action with the specified ID does not exist." });
         return  
-        } else if (post){ 
-        res.status(200).json(post);
+        } else if (action){ 
+        res.status(200).json(action);
         return  
         }
       })
@@ -202,9 +209,9 @@ server.get('/api/singlepost/:id', (req, res) => {
       });
   });
 
-//----- POST posts -----
+//----- POST actions -----
 
-server.post('/api/posts', async (req, res) => {
+server.post('/api/actions', async (req, res) => {
     console.log("HI AGAIN")
     const postData = req.body;
     console.log(postData)
@@ -224,9 +231,9 @@ server.post('/api/posts', async (req, res) => {
     return
 });
 
-//----- PUT posts -----
+//----- PUT actions -----
 
-server.put('/api/singlepost/:id', async (req, res) => {
+server.put('/api/singleaction/:id', async (req, res) => {
    console.log("HI")
     const { id } = req.params;
     const postChanges = req.body;
@@ -258,9 +265,9 @@ server.put('/api/singlepost/:id', async (req, res) => {
       return
       });
 
-//----- DELETE posts -----
+//----- DELETE actions -----
 
-server.delete('/api/users/:id', (req, res) => {
+server.delete('/api/singleaction/:id', (req, res) => {
     const id = req.params.id;
    // userDb.get(id)
    userDb.remove(id)

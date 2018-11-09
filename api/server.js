@@ -97,18 +97,7 @@ server.put('/api/projects/:id', async (req, res) => {
     const { id } = req.params;
     const projectChanges = req.body;
     const characterLimit = 128;
-    projectModel.get(id)
-        .then(project => { 
-        if (!project) { 
-           res.status(404).json({ message: "The project with the specified ID does not exist." });
-           return  
-         }
-         })
-         .catch(err => {
-          res
-            .status(500)
-            .json({ error: "The project information could not be retrieved." });
-         });
+    let updatedProject;
           
         if (!projectChanges.name || projectChanges.name==="" || !projectChanges.description || projectChanges.description==="") {
           const errorMessage = "Please provide name and description for the project"; 
@@ -121,15 +110,19 @@ server.put('/api/projects/:id', async (req, res) => {
             return
         }   
         try {
-          await projectModel.update(id, projectChanges)
-          return
+         updatedProject = await projectModel.update(id, projectChanges)
+         
         } catch (error) {
         res.status(500).json({ error: "There was an error while saving the project to the database" });
-        return      
+       
       }
-      console.log(req.body)
-      res.status(201).json(req.body);
-      return
+      if (updatedProject === null) {
+        res.status(404).json({ message: "The project with the specified ID does not exist." });
+        return
+    } else {
+        res.status(201).json(updatedProject);
+        return
+    }
       });
 
 //----- DELETE projects -----

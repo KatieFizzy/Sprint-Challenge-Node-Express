@@ -130,16 +130,24 @@ server.put('/api/projects/:id', async (req, res) => {
 
 server.delete('/api/projects/:id', (req, res) => {
     const id = req.params.id;
-   // userDb.get(id)
-   projectModel.remove(id)
-   .then(count => res.status(200).json(count))
+    projectModel.remove(id)
+   .then(count => {
+    if (!count) { 
+     res.status(404).json({ message: "The project with the specified ID does not exist." });
+     return  
+     } else if (count){ 
+     res.status(200).json(count);
+     return  
+     }
+ })     
    .catch(err => {
-    res 
-        .status(500)
-        .json({ error: "The post information could not be retrieved." });
-    });
-});
-
+           res 
+             .status(500)
+             .json({ error: "The action information could not be retrieved." });
+         });
+     })  
+      
+    
 //**********************  ACTION CRUD ********************** // 
 
 //----- GET actions -----
@@ -289,14 +297,22 @@ server.put('/api/singleaction/:id', async (req, res) => {
 server.delete('/api/singleaction/:id', (req, res) => {
     const id = req.params.id;
    actionModel.remove(id)
-   .then(count => res.status(200).json(count))
-        .catch(err => {
+  .then(count => {
+   if (!count) { 
+    res.status(404).json({ message: "The action with the specified ID does not exist." });
+    return  
+    } else if (count){ 
+    res.status(200).json(count);
+    return  
+    }
+})     
+  .catch(err => {
           res 
             .status(500)
-            .json({ error: "The post information could not be retrieved." });
+            .json({ error: "The action information could not be retrieved." });
         });
-      
-      });
+    })  
+     
 module.exports = server;
 
   
